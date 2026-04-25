@@ -35,3 +35,66 @@ token.bindPopup("Token Ready! Drag me around.").openPopup();
 map.on('click', function(e) {
     console.log("Clicked Coordinates: ", e.latlng);
 });
+
+// 1. Token Database
+const availableTokens = [
+    { name: "Main Hero", image: "Tokens/TokenM.png" },
+    { name: "Goblin", image: "Tokens/goblin.png" }, 
+    { name: "Orc Warrior", image: "Tokens/orc.png" }
+];
+
+// 2. Render the sidebar list
+const tokenListContainer = document.getElementById('tokenList');
+
+function renderTokens(filter = "") {
+    tokenListContainer.innerHTML = "";
+    
+    availableTokens.forEach(token => {
+        if (token.name.toLowerCase().includes(filter.toLowerCase())) {
+            const div = document.createElement('div');
+            div.className = "token-item";
+            div.innerHTML = `<img src="${token.image}"> <span>${token.name}</span>`;
+            div.onclick = () => spawnToken(token.image, token.name);
+            tokenListContainer.appendChild(div);
+        }
+    });
+}
+
+// 3. Spawn Token Function
+function spawnToken(imgUrl, name) {
+    const center = map.getCenter(); // Spawns in the middle of your current view
+    
+    const icon = L.icon({
+        iconUrl: imgUrl,
+        iconSize: [50, 50],
+        iconAnchor: [25, 25]
+    });
+
+    const marker = L.marker(center, {
+        icon: icon,
+        draggable: true
+    }).addTo(map);
+
+    // 4. ADDING REMOVE BUTTON: Inside the popup
+    const popupContent = `
+        <div style="text-align:center;">
+            <b>${name}</b><br>
+            <button onclick="removeToken(this)" style="margin-top:10px; color:red; cursor:pointer;">Remove</button>
+        </div>
+    `;
+    
+    marker.bindPopup(popupContent);
+}
+
+// 5. Global Remove Function 
+window.removeToken = function(button) {
+    const popup = button.closest('.leaflet-popup');
+    if (popup) {
+       
+        map.eachLayer(layer => {
+            if (layer instanceof L.Marker && layer.getPopup() && layer.getPopup()._content.includes(button.outerHTML)) {
+                map.removeLayer(layer);
+            }
+        });
+    }
+};
