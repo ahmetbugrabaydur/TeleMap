@@ -13,7 +13,7 @@ map.zoomControl.setPosition('topright');
 const defaultBounds = [[0, 0], [1000, 1000]];
 map.fitBounds(defaultBounds);
 
-// 2. Map Loading Mechanism (For DM)
+// Map Loading Mechanism (For DM)
 document.getElementById('mapInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -44,7 +44,7 @@ socket.on('newMapReceived', (data) => {
     map.fitBounds(data.bounds);
 });
 
-// 3. Token Creation and Management
+// Token Creation and Management
 document.getElementById('tokenInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
