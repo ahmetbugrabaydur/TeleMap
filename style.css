@@ -1,13 +1,98 @@
+body, html, #map {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #1a1a1a !important;
+}
+
 body, html {
     margin: 0;
     padding: 0;
     height: 100%;
+    width: 100%;
     overflow: hidden;
+    background-color: #1a1a1a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #map {
     width: 100vw;
     height: 100vh;
-    background-color: #1a1a1a;
+    z-index: 1;
 }
 
+#ui-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    pointer-events: none; 
+}
+
+#logo-container img {
+    width: 180px;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.8));
+    pointer-events: auto;
+}
+
+#action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: auto;
+}
+
+button {
+    background: rgba(30, 30, 30, 0.9);
+    color: #c0a16b; 
+    border: 1px solid #c0a16b;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+button:hover {
+    background: #c0a16b;
+    color: #1a1a1a;
+    transform: translateY(-2px);
+}
+
+.btn-token {
+    border-color: #e67e22;
+    color: #e67e22;
+}
+
+.btn-token:hover {
+    background: #e67e22;
+    color: white;
+}
+
+.token-style {
+    border: 2px solid white;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+@media (max-width: 600px) {
+    #logo-container img {
+        width: 130px;
+    }
+    button {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}

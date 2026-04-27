@@ -3,15 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FRP Harita Botu</title>
+    <title>TeleMap FRP</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <div id="ui-panel">
+        <div id="logo-container">
+            <img src="TeleMapLogo.png" alt="TeleMap FRP"> 
+        </div>
+
+        <div id="action-buttons">
+            <input type="file" id="mapInput" accept="image/*" style="display:none">
+            <button class="btn-map" onclick="document.getElementById('mapInput').click()">
+                <span>🗺️</span> Upload Map
+            </button>
+
+            <input type="file" id="tokenInput" accept="image/*" style="display:none">
+            <button class="btn-token" onclick="document.getElementById('tokenInput').click()">
+                <span>👤</span> Upload Token
+            </button>
+        </div>
+    </div>
+
     <div id="map"></div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
+
 
