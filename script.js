@@ -1,143 +1,125 @@
 const socket = io();
-let markers = {}; // To track pawns on the screen by ID
-let currentMapLayer; // To keep track of the current map layer for easy updates
+let markers = {}; 
+let currentMapOverlay = null;
+let deleteMode = false;
+let pendingUploadData = null; 
 
-// Map creation
-const map = L.map('map', {
-    crs: L.CRS.Simple,
-    minZoom: -3
-});
+// Map Initialization
+const map = L.map('map', { crs: L.CRS.Simple, minZoom: -3 }).setView([500, 500], 2);
+
 map.zoomControl.setPosition('topright');
 
-// Default view
-const defaultBounds = [[0, 0], [1000, 1000]];
-map.fitBounds(defaultBounds);
+const GRID_UNIT_SIZE = 50;
 
-// Map Loading Mechanism (For DM)
-document.getElementById('mapInput').addEventListener('change', function(e) {
+function getScaledSize() {
+    const currentZoom = map.getZoom();
+    const point1 = map.project([0, 0], currentZoom);
+    const point2 = map.project([0, GRID_UNIT_SIZE], currentZoom);
+    let size = Math.abs(point2.x - point1.x);
+    return size < 15 ? 15 : size;
+}
+
+// Grid Overlay
+function handleUniversalUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(event) {
-        const imgData = event.target.result;
-        
-        // The image dimensions are obtained and the map is scaled accordingly.
-        const img = new Image();
-        img.onload = function() {
-            const w = this.width;
-            const h = this.height;
-            const newBounds = [[0, 0], [h, w]];
-            
-            // Send the new map to the server
-            socket.emit('mapUpdate', { imgData: imgData, bounds: newBounds });
-        };
-        img.src = imgData;
+    reader.onload = (event) => {
+        pendingUploadData = event.target.result;
+        document.getElementById('uploadModal').style.display = 'flex'; 
     };
     reader.readAsDataURL(file);
+    e.target.value = ""; 
+}
+
+function processUpload(type) {
+    if (!pendingUploadData) return;
+
+    if (type === 'map') {
+        socket.emit('mapUpdate', { imgData: pendingUploadData, bounds: [[0, 0], [1000, 1000]] });
+    } else if (type === 'token') {
+        const name = prompt("Token Name:", "New Token");
+        if (name !== null) spawnToken(pendingUploadData, name);
+    }
+    closeUploadModal();
+}
+
+function closeUploadModal() {
+    document.getElementById('uploadModal').style.display = 'none';
+    pendingUploadData = null;
+}
+
+function toggleDeleteMode() {
+    deleteMode = !deleteMode;
+    const btn = document.getElementById('deleteModeBtn');
+    const mapEl = document.getElementById('map');
+
+    if (deleteMode) {
+        btn.innerHTML = "<span>✂️</span> DELETE: ON";
+        btn.classList.add('active');
+        mapEl.classList.add('delete-cursor');
+    } else {
+        btn.innerHTML = "<span>✂️</span> DELETE";
+        btn.classList.remove('active');
+        mapEl.classList.remove('delete-cursor');
+    }
+}
+
+map.on('click', (e) => {
+    if (deleteMode && currentMapOverlay) {
+        if(confirm("Are you sure you want to delete the map completely?")) {
+            socket.emit('clearMapRequest');
+            toggleDeleteMode();
+        }
+    }
 });
 
-// Apply the map update received from the server
+function spawnToken(imgUrl, name, id = null, pos = null) {
+    const tokenId = id || Date.now();
+    const position = pos || map.getCenter();
+    const size = getScaledSize();
+
+    const icon = L.icon({
+        iconUrl: imgUrl, iconSize: [size, size], iconAnchor: [size/2, size/2], className: 'token-style'
+    });
+
+    const marker = L.marker(position, { icon, draggable: true }).addTo(map);
+    marker.tokenId = tokenId; marker.imgUrl = imgUrl; markers[tokenId] = marker;
+
+    marker.on('click', (e) => {
+        if (deleteMode) {
+            L.DomEvent.stopPropagation(e); 
+            map.removeLayer(marker); delete markers[tokenId];
+            socket.emit('removeToken', tokenId);
+        }
+    });
+
+    marker.on('dragend', () => socket.emit('tokenMove', { id: tokenId, pos: marker.getLatLng() }));
+    if (!id) socket.emit('newToken', { id: tokenId, name, image: imgUrl, pos: position });
+}
+
 socket.on('newMapReceived', (data) => {
-    if (currentMapLayer) map.removeLayer(currentMapLayer);
-    currentMapLayer = L.imageOverlay(data.imgData, data.bounds).addTo(map);
+    if (currentMapOverlay) map.removeLayer(currentMapOverlay);
+    currentMapOverlay = L.imageOverlay(data.imgData, data.bounds).addTo(map);
     map.fitBounds(data.bounds);
 });
 
-// Token Creation and Management
-document.getElementById('tokenInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        const imgUrl = event.target.result;
-        const name = prompt("Enter the name of the token: ", "New Token");
-        
-        if (name) {
-            spawnToken(imgUrl, name);
-        }
-    };
-    reader.readAsDataURL(file);
+socket.on('mapCleared', () => {
+    if (currentMapOverlay) { map.removeLayer(currentMapOverlay); currentMapOverlay = null; }
 });
 
-// Token Creation Function
-function spawnToken(imgUrl, name, id = null, pos = null) {
-    const tokenId = id || Date.now(); // If no ID is provided, create a new one 
-    const position = pos || map.getCenter();
-
-    const icon = L.icon({
-        iconUrl: imgUrl,
-        iconSize: [50, 50],
-        iconAnchor: [25, 25],
-        className: 'token-style'
-    });
-
-    const marker = L.marker(position, {
-        icon: icon,
-        draggable: true
-    }).addTo(map);
-
-    marker.tokenId = tokenId;
-    markers[tokenId] = marker;
-
-    // If this is a new token (not received from the server), emit it to others
-    if (!id) {
-        socket.emit('newToken', { 
-            id: tokenId, 
-            name: name, 
-            image: imgUrl, 
-            pos: position 
-        });
-    }
-
-    // When the token is dragged, send its new position to the server
-    marker.on('dragend', function() {
-        socket.emit('tokenMove', { id: tokenId, pos: marker.getLatLng() });
-    });
-
-    // Bind a popup with the token's name and a delete button
-    const popupContent = `
-        <div style="text-align:center;">
-            <b>${name}</b><br>
-            <button onclick="deleteToken(${tokenId})" style="margin-top:5px; background:#ff4757; color:white; border:none; border-radius:3px; cursor:pointer;">Delete</button>
-        </div>
-    `;
-    marker.bindPopup(popupContent);
-}
-
-// Token Deletion Function
-window.deleteToken = function(id) {
-    if (markers[id]) {
-        map.removeLayer(markers[id]);
-        delete markers[id];
-        socket.emit('removeToken', id);
-    }
-};
-
-// Update a pawn that someone else is moving.
-socket.on('tokenUpdate', (data) => {
-    if (markers[data.id]) {
-        markers[data.id].setLatLng(data.pos); 
-    }
+map.on('zoomend', () => {
+    const size = getScaledSize();
+    Object.values(markers).forEach(m => m.setIcon(L.icon({ iconUrl: m.imgUrl, iconSize: [size, size], iconAnchor: [size/2, size/2], className: 'token-style' })));
 });
 
-// Print the pawn that someone else added to the screen.
-socket.on('tokenSpawned', (data) => {
-    spawnToken(data.image, data.name, data.id, data.pos);
-});
+socket.on('tokenSpawned', (d) => spawnToken(d.image, d.name, d.id, d.pos));
+socket.on('tokenUpdate', (d) => markers[d.id]?.setLatLng(d.pos));
+socket.on('tokenDeleted', (id) => { if (markers[id]) { map.removeLayer(markers[id]); delete markers[id]; } });
+socket.on('initialTokens', (ts) => Object.values(ts).forEach(t => spawnToken(t.image, t.name, t.id, t.pos)));
 
-// Remove a pawn that someone else deleted from the screen.
-socket.on('tokenDeleted', (id) => {
-    if (markers[id]) {
-        map.removeLayer(markers[id]);
-        delete markers[id];
-    }
-});
-
-// When a new player joins the game, load all existing tokens.
-socket.on('initialTokens', (tokens) => {
-    Object.values(tokens).forEach(t => {
-        spawnToken(t.image, t.name, t.id, t.pos);
-    });
-});
+function manualSave() { 
+    socket.emit('manualSaveRequest'); 
+    alert("Session saved!");
+} 

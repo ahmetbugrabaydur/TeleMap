@@ -8,22 +8,37 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div id="ui-panel">
         <div id="logo-container">
             <img src="TeleMapLogo.png" alt="TeleMap FRP"> 
         </div>
 
         <div id="action-buttons">
-            <input type="file" id="mapInput" accept="image/*" style="display:none">
-            <button class="btn-map" onclick="document.getElementById('mapInput').click()">
-                <span>🗺️</span> Upload Map
+            <button class="btn-primary" onclick="document.getElementById('universalInput').click()">
+                <span>📤</span> UPLOAD
+            </button>
+            <input type="file" id="universalInput" accept="image/*" style="display:none" onchange="handleUniversalUpload(event)">
+
+            <button class="btn-success" onclick="manualSave()">
+                <span>💾</span> SAVE
             </button>
 
-            <input type="file" id="tokenInput" accept="image/*" style="display:none">
-            <button class="btn-token" onclick="document.getElementById('tokenInput').click()">
-                <span>👤</span> Upload Token
+            <button id="deleteModeBtn" class="btn-danger" onclick="toggleDeleteMode()">
+                <span>✂️</span> DELETE
             </button>
+        </div>
+    </div>
+
+    <!-- Modal for Upload Decision -->
+    <div id="uploadModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>What do you want to upload?</h3>
+            <p>Do you want to make the selected image a map or a token?</p>
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="processUpload('map')">🗺️ Map</button>
+                <button class="btn-secondary" onclick="processUpload('token')">♟️ Token</button>
+                <button class="btn-danger" onclick="closeUploadModal()">❌ Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -34,5 +49,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
-

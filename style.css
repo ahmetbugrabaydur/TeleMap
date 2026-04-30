@@ -1,98 +1,71 @@
 body, html, #map {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+    margin: 0; padding: 0; width: 100%; height: 100%;
     background-color: #1a1a1a !important;
-}
-
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
     overflow: hidden;
-    background-color: #1a1a1a;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-#map {
-    width: 100vw;
-    height: 100vh;
-    z-index: 1;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 #ui-panel {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    position: absolute; top: 20px; left: 20px; z-index: 1000;
+    display: flex; flex-direction: column; gap: 15px;
     pointer-events: none; 
 }
 
 #logo-container img {
-    width: 180px;
+    width: 180px !important;
     height: auto;
     filter: drop-shadow(0 0 10px rgba(0,0,0,0.8));
     pointer-events: auto;
 }
 
 #action-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: flex; flex-direction: column; gap: 10px;
     pointer-events: auto;
 }
 
 button {
-    background: rgba(30, 30, 30, 0.9);
-    color: #c0a16b; 
-    border: 1px solid #c0a16b;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    text-transform: uppercase;
-    font-size: 14px;
+    background: rgba(30, 30, 30, 0.9); color: white;
+    border: 2px solid transparent; padding: 12px 18px;
+    border-radius: 8px; font-weight: bold; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s; text-transform: uppercase; font-size: 14px;
 }
 
-button:hover {
-    background: #c0a16b;
-    color: #1a1a1a;
-    transform: translateY(-2px);
-}
+button:hover { transform: translateY(-2px); filter: brightness(1.2); }
 
-.btn-token {
-    border-color: #e67e22;
-    color: #e67e22;
-}
+.btn-primary { border-color: #3498db; color: #3498db; }
+.btn-secondary { border-color: #9b59b6; color: #9b59b6; }
+.btn-success { border-color: #27ae60; color: #27ae60; }
+.btn-danger { border-color: #e74c3c; color: #e74c3c; }
 
-.btn-token:hover {
-    background: #e67e22;
-    color: white;
+.btn-danger.active { background: #e74c3c; color: white; box-shadow: 0 0 15px #e74c3c; }
+
+#map.delete-cursor {
+    cursor: crosshair;
+    outline: 5px solid #e74c3c;
+    outline-offset: -5px;
 }
 
 .token-style {
-    border: 2px solid white;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white; border-radius: 50%;
     box-shadow: 0 0 10px rgba(0,0,0,0.6);
+    transition: width 0.2s, height 0.2s;
 }
 
-@media (max-width: 600px) {
-    #logo-container img {
-        width: 130px;
-    }
-    button {
-        padding: 8px 12px;
-        font-size: 12px;
-    }
+/* --- MODAL OVERLAY --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 2000;
 }
+
+.modal-content {
+    background: #1a1a1a; padding: 25px; border-radius: 12px;
+    text-align: center; color: white; border: 2px solid #c0a16b;
+    box-shadow: 0 0 25px rgba(0,0,0,0.9);
+}
+
+.modal-content h3 { margin-top: 0; color: #c0a16b; }
+.modal-content p { margin-bottom: 20px; font-size: 14px; }
+.modal-buttons { display: flex; gap: 15px; justify-content: center; }
