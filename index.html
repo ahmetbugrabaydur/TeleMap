@@ -26,6 +26,11 @@
             <button id="deleteModeBtn" class="btn-danger" onclick="toggleDeleteMode()">
                 <span>✂️</span> DELETE
             </button>
+
+            <!-- Initiative Start Button -->
+            <button id="trackerToggleBtn" onclick="toggleTracker()">
+                <span>⚔️</span> Combat Tracker
+            </button>
         </div>
     </div>
 
@@ -42,6 +47,52 @@
         </div>
     </div>
 
+    <!-- Initiative Panel -->
+    <div id="initiativeTracker" class="tracker-panel hidden">
+        <div class="tracker-header">
+            <h3 style="margin: 0; color: #c0a16b;">Combat Tracker</h3>
+            <button onclick="toggleTracker()" style="background: none; border: none; color: white; cursor: pointer;">✖</button>
+        </div>
+        
+        <div class="tracker-inputs">
+            <input type="text" id="charName" placeholder="Name (e.g., Goblin)">
+            <input type="number" id="charInit" placeholder="Initiative">
+            <button class="btn-primary" onclick="addInitiative()">Add</button>
+        </div>
+
+        <ul id="initiativeList">
+            <!-- The list will go here using JS. -->
+        </ul>
+
+        <div class="tracker-controls">
+            <button class="btn-secondary" onclick="nextTurn()" style="flex:1;">⏭ Next</button>
+            <button class="btn-danger" onclick="clearInitiative()">🗑️ Clear</button>
+        </div>
+    </div>
+
+    <!-- Chat and Dice Panel -->
+    <div id="chatContainer" class="chat-panel">
+        <div class="chat-header" onclick="toggleChat()">
+            <h3 style="margin: 0; color: #c0a16b; font-size: 14px;">🎲 Chat & Dice</h3>
+            <span id="chatToggleIcon" style="color:#c0a16b;">▼</span>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <ul id="chatMessages"></ul>
+        </div>
+        <!-- Chat and Dice Input -->
+        ...
+        <div class="chat-input-area" id="chatInputArea" style="flex-wrap: wrap;">
+            <div style="display: flex; gap: 5px; width: 100%; margin-bottom: 5px;">
+                <input type="text" id="playerName" placeholder="Character Name" style="flex: 1;">
+                <input type="color" id="playerColor" value="#3498db" style="width: 35px; padding: 0; cursor: pointer; border: 1px solid #c0a16b; border-radius: 4px; background: none;" title="Rengini Seç">
+            </div>
+            <div style="display: flex; gap: 5px; width: 100%;">
+                <input type="text" id="chatInput" placeholder="Message or /roll 1d20+3" onkeypress="handleChatKeyPress(event)">
+                <button class="btn-primary" onclick="sendChatMessage()" style="padding: 8px 12px; font-size: 12px;">Send</button>
+            </div>
+        </div>
+    </div>
+    
     <div id="map"></div>
 
     <script src="/socket.io/socket.io.js"></script>

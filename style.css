@@ -24,21 +24,29 @@ body, html, #map {
 }
 
 button {
-    background: rgba(30, 30, 30, 0.9); color: white;
-    border: 2px solid transparent; padding: 12px 18px;
+    background: rgba(30, 30, 30, 0.9); 
+    color: #c0a16b; 
+    border: 2px solid #c0a16b; 
+    padding: 12px 18px;
     border-radius: 8px; font-weight: bold; cursor: pointer;
     display: flex; align-items: center; justify-content: center; gap: 8px;
     transition: all 0.2s; text-transform: uppercase; font-size: 14px;
 }
 
-button:hover { transform: translateY(-2px); filter: brightness(1.2); }
+/* Gold fill effect when you hover over or touch it. */
+button:hover { 
+    background: #c0a16b; 
+    color: #1a1a1a; 
+    transform: translateY(-2px); 
+}
 
-.btn-primary { border-color: #3498db; color: #3498db; }
-.btn-secondary { border-color: #9b59b6; color: #9b59b6; }
-.btn-success { border-color: #27ae60; color: #27ae60; }
-.btn-danger { border-color: #e74c3c; color: #e74c3c; }
-
-.btn-danger.active { background: #e74c3c; color: white; box-shadow: 0 0 15px #e74c3c; }
+/* The red light only illuminates as a warning when Erase Mode is enabled. */
+.btn-danger.active { 
+    background: #e74c3c; 
+    color: white; 
+    border-color: #e74c3c;
+    box-shadow: 0 0 15px #e74c3c; 
+}
 
 #map.delete-cursor {
     cursor: crosshair;
@@ -47,12 +55,11 @@ button:hover { transform: translateY(-2px); filter: brightness(1.2); }
 }
 
 .token-style {
-    border: 2px solid white; border-radius: 50%;
+    border-radius: 50%;
     box-shadow: 0 0 10px rgba(0,0,0,0.6);
     transition: width 0.2s, height 0.2s;
 }
 
-/* --- MODAL OVERLAY --- */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(0, 0, 0, 0.85);
@@ -69,3 +76,86 @@ button:hover { transform: translateY(-2px); filter: brightness(1.2); }
 .modal-content h3 { margin-top: 0; color: #c0a16b; }
 .modal-content p { margin-bottom: 20px; font-size: 14px; }
 .modal-buttons { display: flex; gap: 15px; justify-content: center; }
+
+.tracker-panel {
+    position: absolute; 
+    top: 215px; 
+    left: 220px; 
+    width: 300px;
+    background: rgba(20, 20, 20, 0.95); border: 2px solid #c0a16b; border-radius: 10px;
+    z-index: 1001; display: flex; flex-direction: column; color: white;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8); transition: transform 0.3s ease, opacity 0.3s;
+    pointer-events: auto;
+}
+
+.tracker-panel.hidden { 
+    transform: translateX(-30px); 
+    opacity: 0; 
+    pointer-events: none; 
+}
+
+.tracker-panel.hidden { transform: translateX(120%); opacity: 0; pointer-events: none; }
+
+.tracker-header { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #c0a16b; align-items: center; }
+
+.tracker-header button { padding: 0; border: none; background: none; color: white; justify-content: flex-end; }
+.tracker-header button:hover { background: none; color: #e74c3c; transform: none; }
+
+.tracker-inputs { display: flex; gap: 5px; padding: 15px; }
+.tracker-inputs input { 
+    background: #333; border: 1px solid #c0a16b; color: white; 
+    padding: 8px; border-radius: 4px; outline: none; width: 50%;
+}
+.tracker-inputs button { padding: 8px 12px; font-size: 12px; }
+
+#initiativeList { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
+#initiativeList li { 
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 15px; border-bottom: 1px solid #444; font-size: 14px;
+}
+
+/* The tiny delete button in the list */
+#initiativeList li button { padding: 5px; border: none; background: none; color: #e74c3c; font-size: 16px; }
+#initiativeList li button:hover { background: none; color: white; transform: scale(1.2); }
+
+/* It highlights the character in turn. */
+#initiativeList li.active-turn { 
+    background: rgba(192, 161, 107, 0.2); 
+    border-left: 5px solid #c0a16b; 
+    font-weight: bold; 
+}
+
+.tracker-controls { display: flex; gap: 10px; padding: 15px; justify-content: space-between; } 
+
+/* --- Chat and Dice Panel --- */
+.chat-panel {
+    position: absolute; bottom: 20px; right: 20px; width: 320px;
+    background: rgba(20, 20, 20, 0.95); border: 2px solid #c0a16b; border-radius: 10px;
+    z-index: 1000; display: flex; flex-direction: column; color: white;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8); pointer-events: auto;
+    transition: transform 0.3s ease;
+}
+
+.chat-header {
+    padding: 10px 15px; border-bottom: 1px solid #c0a16b; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(30, 30, 30, 0.9); border-radius: 8px 8px 0 0;
+}
+.chat-header:hover { background: #c0a16b; }
+.chat-header:hover h3, .chat-header:hover span { color: #1a1a1a !important; }
+
+.chat-body { height: 200px; overflow-y: auto; padding: 10px; display: block; }
+#chatMessages { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+#chatMessages li { font-size: 13px; line-height: 1.4; word-wrap: break-word; }
+
+.chat-input-area { display: flex; gap: 5px; padding: 10px; border-top: 1px solid #c0a16b; }
+.chat-input-area input {
+    background: #333; border: 1px solid #c0a16b; color: white;
+    padding: 8px; border-radius: 4px; outline: none; flex: 1;
+}
+
+.chat-collapsed { transform: translateY(calc(100% - 41px)); } 
+
+.chat-msg-normal strong { color: #3498db; }
+.chat-msg-roll { color: #c0a16b; font-weight: bold; background: rgba(192, 161, 107, 0.15); padding: 6px; border-left: 3px solid #c0a16b; border-radius: 4px; }
+.chat-msg-system { color: #e74c3c; font-style: italic; font-size: 12px; }
