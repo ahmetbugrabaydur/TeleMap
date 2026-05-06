@@ -1,7 +1,7 @@
 # 🐉 TeleMap FRP - Lightweight Virtual Tabletop (VTT)
 
 <p align="center">
-  <img src="./TeleMapLogo.png" alt="TeleMap FRP Logo" width="100%" style="border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+  <img src="./TeleMapFRP.png" alt="TeleMap FRP Banner" width="100%" style="border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
 </p>
 
 TeleMap FRP is a fast, lightweight, and real-time Virtual Tabletop (VTT) application designed for tabletop role-playing games (like D&D, Pathfinder, etc.). Unlike heavy and complex VTT platforms, it aims to provide only the most essential tools for the Dungeon Master (DM) and players in the most elegant and optimized way possible.
